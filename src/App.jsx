@@ -4,6 +4,7 @@ import AppMain from './AppMain.jsx';
 import Loader from './Loader.jsx';
 import Error from './Error.jsx';
 import StartScreen from './StartScreen.jsx';
+import Question from './Question.jsx';
 import { useEffect, useReducer } from 'react';
 
 const initialState = {
@@ -25,6 +26,8 @@ function reducer(state, action) {
 				...state,
 				status: 'error',
 			};
+		case 'start':
+			return { ...state, status: 'active' };
 
 		default:
 			throw new Error('Action unknown!');
@@ -50,7 +53,10 @@ export default function App() {
 			<AppMain>
 				{status === 'loading' && <Loader />}
 				{status === 'error' && <Error />}
-				{status === 'ready' && <StartScreen numQuestions={numQuestions} />}
+				{status === 'ready' && (
+					<StartScreen numQuestions={numQuestions} dispatch={dispatch} />
+				)}
+				{status === 'active' && <Question />}
 			</AppMain>
 		</div>
 	);
