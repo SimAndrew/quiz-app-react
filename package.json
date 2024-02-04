@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "format": "prettier --write ./src"
+    "format": "prettier --write ./src",
+    "server": "json-server --watch src/data/questions.json --port 8000"
   },
   "dependencies": {
     "react": "^18.2.0",
