@@ -8,7 +8,11 @@ import Question from './Question.jsx';
 import NextButton from './NextButton.jsx';
 import Progress from './Progress.jsx';
 import FinishScreen from './FinishScreen.jsx';
+import Footer from './Footer.jsx';
+import Timer from './Timer.jsx';
 import { useEffect, useReducer } from 'react';
+
+const SEC_PER_QUESTION = 20;
 
 const initialState = {
 	questions: [],
@@ -18,6 +22,7 @@ const initialState = {
 	answer: null,
 	points: 0,
 	highscore: 0,
+	secondsRemaining: null,
 };
 
 function reducer(state, action) {
@@ -34,7 +39,11 @@ function reducer(state, action) {
 				status: 'error',
 			};
 		case 'start':
-			return { ...state, status: 'active' };
+			return {
+				...state,
+				status: 'active',
+				secondsRemaining: state.questions.length * SEC_PER_QUESTION,
+			};
 
 		case 'newAnswer':
 			const question = state.questions.at(state.index);
@@ -67,14 +76,25 @@ function reducer(state, action) {
 				status: 'ready',
 			};
 
+		case 'tick':
+			return {
+				...state,
+				secondsRemaining: state.secondsRemaining - 1,
+				status: state.secondsRemaining === 0 ? 'finished' : state.status,
+				highscore:
+					state.points > state.highscore ? state.points : state.highscore,
+			};
+
 		default:
 			throw new Error('Action unknown!');
 	}
 }
 
 export default function App() {
-	const [{ questions, status, index, answer, points, highscore }, dispatch] =
-		useReducer(reducer, initialState);
+	const [
+		{ questions, status, index, answer, points, highscore, secondsRemaining },
+		dispatch,
+	] = useReducer(reducer, initialState);
 
 	const numQuestions = questions.length;
 
@@ -116,12 +136,16 @@ export default function App() {
 							answer={answer}
 						/>
 
-						<NextButton
-							dispatch={dispatch}
-							answer={answer}
-							index={index}
-							numQuestions={numQuestions}
-						/>
+						<Footer>
+							<Timer dispatch={dispatch} secondsRemaining={secondsRemaining} />
+
+							<NextButton
+								dispatch={dispatch}
+								answer={answer}
+								index={index}
+								numQuestions={numQuestions}
+							/>
+						</Footer>
 					</>
 				)}
 
